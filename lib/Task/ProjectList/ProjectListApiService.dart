@@ -1,17 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_app/AllApiCall/ApiConstants.dart';
 import 'package:flutter_app/Login/NetworkUtil.dart';
+import 'package:flutter_app/Task/AllList/AllListRequest.dart';
 
-import 'AllListRequest.dart';
 
-class AllListApiService {
+class ProjectListApiService {
   NetworkUtil  networkUtil = NetworkUtil();
 
-  Future<Response> alllist(AllListRequest ListRequest) {
+  Future<Response> projectlist(AllListRequest ListRequest) {
     return networkUtil.post(ApiConstants.ALL_LIST, ListRequest.toMap());
   }
 
 }
 
 ///Single final Object of API Service
-final apiServiceInstance =  AllListApiService();
+final apiServiceInstance =  ProjectListApiService();

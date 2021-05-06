@@ -1,11 +1,12 @@
 import 'package:flutter_app/Login/GeneralResponse.dart';
-import 'package:flutter_app/Login/User.dart';
+
+import 'ViewTaskModel.dart';
 
 class ViewTaskResponse extends GeneralResponse {
-  User Result;
+  ViewTaskModel Result;
 
   ViewTaskResponse.fromJson(Map<String, dynamic> json)
-      : Result = User.fromJson(json),
+      : Result = ViewTaskModel.fromJson(json),
         super.fromJson(json);
 
 }

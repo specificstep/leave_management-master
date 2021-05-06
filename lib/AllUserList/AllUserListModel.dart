@@ -2,17 +2,16 @@ class  AllUserListModel{
 
   String status;
   String message;
-  List<AttendanceList> attendancelist;
+  List<UserList> userlist;
 
-  AllUserListModel(this.attendancelist);
-
+  AllUserListModel(this.userlist);
   AllUserListModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    attendancelist = new List<AttendanceList>();
-    if(json.containsKey("show_attendance_list")){
-      json['show_attendance_list'].forEach((v) {
-        attendancelist.add(new AttendanceList.fromJson(v));
+    userlist = new List<UserList>();
+    if(json.containsKey("user_list")){
+      json['user_list'].forEach((v) {
+        userlist.add(new UserList.fromJson(v));
       });
     }
 
@@ -21,31 +20,28 @@ class  AllUserListModel{
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     // data['status'] = this.status;
-    if (this.attendancelist != null) {
-      data['show_attendance_list'] = this.attendancelist.map((v) => v.toJson()).toList();
+    if (this.userlist != null) {
+      data['user_list'] = this.userlist.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
-class AttendanceList {
-  String start_time;
-  String leave_status;
-  String difference;
+class UserList {
+  String userid;
+  String username;
 
-  AttendanceList(this.start_time, this.leave_status,this.difference);
+  UserList(this.userid, this.username);
 
-  AttendanceList.fromJson(Map<String, dynamic> json) {
-    start_time = json['start_date'];
-    leave_status = json['leave_status'];
-    difference = json['difference'];
+  UserList.fromJson(Map<String, dynamic> json) {
+    userid = json['userid'];
+    username = json['username'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['start_date'] = this.start_time;
-    data['leave_status'] = this.leave_status;
-    data['difference'] = this.difference;
+    data['userid'] = this.userid;
+    data['username'] = this.username;
     return data;
   }
 }

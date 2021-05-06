@@ -1,17 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_app/Login/ApiResponse.dart';
 import 'package:flutter_app/Login/DataFetchCall.dart';
-import 'package:flutter_app/Task/AllList/AllListResponse.dart';
+import 'package:flutter_app/Task/AllList/AllListRequest.dart';
+import 'package:flutter_app/Task/ProjectList/ProjectListResponse.dart';
 import 'package:rxdart/subjects.dart';
 
-import 'AllListApiService.dart';
-import 'AllListRequest.dart';
+import 'ProjectListApiService.dart';
 
 
-class AllListCall extends DataFetchCall<AllListResponse> {
+
+class ProjectListCall extends DataFetchCall<ProjectListResponse> {
   AllListRequest  _request;
-  AllListCall(AllListRequest  request,
-      BehaviorSubject<ApiResponse<AllListResponse>> responseSubject)
+  ProjectListCall(AllListRequest  request,
+      BehaviorSubject<ApiResponse<ProjectListResponse>> responseSubject)
       : super(responseSubject) {
     this._request = request;
   }
@@ -34,16 +35,16 @@ class AllListCall extends DataFetchCall<AllListResponse> {
   @override
   Future<Response> createApiAsync() {
     /// need to return APIService async task for API request
-    return apiServiceInstance.alllist(_request);
+    return apiServiceInstance.projectlist(_request);
   }
 
   /// called when API Response is Success
   @override
-  void onSuccess(AllListResponse response) {}
+  void onSuccess(ProjectListResponse response) {}
 
   /// called when API Response is success and need to parse JsonData to Model
   @override
-  AllListResponse parseJson(Response response) {
-    return AllListResponse.fromJson(response.data);
+  ProjectListResponse parseJson(Response response) {
+    return ProjectListResponse.fromJson(response.data);
   }
 }

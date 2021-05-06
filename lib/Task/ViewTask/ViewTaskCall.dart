@@ -1,17 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_app/Login/ApiResponse.dart';
 import 'package:flutter_app/Login/DataFetchCall.dart';
-import 'package:flutter_app/Task/AllList/AllListResponse.dart';
+import 'package:flutter_app/Task/ViewTask/ViewTaskRequest.dart';
+import 'package:flutter_app/Task/ViewTask/ViewTaskResponse.dart';
 import 'package:rxdart/subjects.dart';
 
-import 'AllListApiService.dart';
-import 'AllListRequest.dart';
+import 'ViewTaskApiService.dart';
 
 
-class AllListCall extends DataFetchCall<AllListResponse> {
-  AllListRequest  _request;
-  AllListCall(AllListRequest  request,
-      BehaviorSubject<ApiResponse<AllListResponse>> responseSubject)
+
+class ViewTaskCall extends DataFetchCall<ViewTaskResponse> {
+  ViewTaskRequest  _request;
+  ViewTaskCall(ViewTaskRequest  request,
+      BehaviorSubject<ApiResponse<ViewTaskResponse>> responseSubject)
       : super(responseSubject) {
     this._request = request;
   }
@@ -34,16 +35,16 @@ class AllListCall extends DataFetchCall<AllListResponse> {
   @override
   Future<Response> createApiAsync() {
     /// need to return APIService async task for API request
-    return apiServiceInstance.alllist(_request);
+    return apiServiceInstance.viewTask(_request);
   }
 
   /// called when API Response is Success
   @override
-  void onSuccess(AllListResponse response) {}
+  void onSuccess(ViewTaskResponse response) {}
 
   /// called when API Response is success and need to parse JsonData to Model
   @override
-  AllListResponse parseJson(Response response) {
-    return AllListResponse.fromJson(response.data);
+  ViewTaskResponse parseJson(Response response) {
+    return ViewTaskResponse.fromJson(response.data);
   }
 }

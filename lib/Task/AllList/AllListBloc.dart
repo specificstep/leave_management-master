@@ -1,7 +1,7 @@
-import 'package:flutter_app/Common/CommonRequest.dart';
 import 'package:flutter_app/Login/ApiResponse.dart';
 import 'package:flutter_app/Task/AllList/AllListRepository.dart';
 import 'package:flutter_app/Task/AllList/AllListResponse.dart';
+import 'package:flutter_app/Task/AllList/AllListRequest.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AllListBloc {
@@ -9,7 +9,7 @@ class AllListBloc {
   final BehaviorSubject<ApiResponse<AllListResponse>> _subjectLogin =
       BehaviorSubject<ApiResponse<AllListResponse>>();
 
-  executeLeaveList(CommonRequest request) {
+  executeLeaveList(AllListRequest request) {
     _repository.executeallList(request, _subjectLogin);
   }
 

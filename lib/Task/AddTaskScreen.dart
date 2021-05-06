@@ -6,12 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/AllApiCall/ApiConstants.dart';
-import 'package:flutter_app/Common/CommonRequest.dart';
 import 'package:flutter_app/Screens/AdminHomePage.dart';
 import 'package:flutter_app/Screens/HomePage.dart';
 import 'package:flutter_app/Task/AddTaskApi/AddTaskRequest.dart';
 import 'package:flutter_app/Task/AllList/AllListBloc.dart';
 import 'package:flutter_app/Task/AllList/AllListModel.dart';
+import 'package:flutter_app/Task/ProjectList/ProjectListBloc.dart';
 import 'package:flutter_app/utilities/TextView.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,6 +19,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'AddTaskApi/AddTaskBloc.dart';
+import 'AllList/AllListRequest.dart';
+import 'ProjectList/ProjectListShowModel.dart';
 
 class AddTaskScreen extends StatelessWidget {
   @override
@@ -42,15 +44,18 @@ class AddTaskScreenStates extends StatefulWidget {
 
 class _AddTaskScreen extends State<AddTaskScreenStates> {
   AllListBloc _allListBloc = AllListBloc();
+  ProjectListBloc _projectListBloc = ProjectListBloc();
   AddTaskBloc _addTaskBloc = AddTaskBloc();
   String token = "";
   String user_id = "";
+  String selected_projectId = "";
+  String selected_projectName = "";
   bool isloading = true;
   bool showlist = false;
-  List<ProjectListModel> _projectlist;
+  List<ProjectListModel> _projectlist = [];
   ProjectListModel _nameList;
-  String leave_type_id = "";
-
+  List<DropdownMenuItem<ProjectListModel>> _dropdownMenuItems;
+  ProjectListModel _selectedCompany;
   bool manager_selectingmode = true;
   List<String> manager_names = [];
   List<String> manager_id = [];
@@ -73,7 +78,7 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
 
   // file selection
 
-  String _fileName="";
+  String _fileName = "";
   List<PlatformFile> _paths;
   String _directoryPath;
   String _extension;
@@ -81,7 +86,6 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
   bool _multiPick = true;
   FileType _pickingType = FileType.any;
   File file1;
-  ScrollController _controller = new ScrollController();
 
   String selectedItemValue = "Critical";
   TextEditingController _startdatecontroller = new TextEditingController();
@@ -250,11 +254,11 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                                         InkWell(
                                           onTap: () {
                                             setState(() {
-                                              if (employeelist_showlist == true) {
-                                                employeelist_showlist=false;
-                                              }else{
+                                              if (employeelist_showlist ==
+                                                  true) {
+                                                employeelist_showlist = false;
+                                              } else {
                                                 employeelist_showlist = true;
-
                                               }
                                             });
                                             // showListwidget();
@@ -263,7 +267,8 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                                             child: new TextField(
                                               controller: _employeecontroller,
                                               decoration: InputDecoration(
-                                                suffixIcon: Icon(Icons.keyboard_arrow_down_rounded),
+                                                suffixIcon: Icon(Icons
+                                                    .keyboard_arrow_down_rounded),
                                                 contentPadding:
                                                     EdgeInsets.fromLTRB(
                                                         10, 10, 10, 0),
@@ -277,8 +282,6 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                                                     fontSize: 13.0,
                                                     color: Colors.black),
                                               ),
-
-
                                             ),
                                           ),
                                         ),
@@ -378,10 +381,9 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                                           onTap: () {
                                             setState(() {
                                               if (managerlist_showlist == true) {
-                                                managerlist_showlist=false;
-                                              }else{
+                                                managerlist_showlist = false;
+                                              } else {
                                                 managerlist_showlist = true;
-
                                               }
                                             });
                                             // showListwidget();
@@ -391,7 +393,8 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                                               controller:
                                                   _managerlistcontroller,
                                               decoration: InputDecoration(
-                                                suffixIcon: Icon(Icons.keyboard_arrow_down_rounded),
+                                                suffixIcon: Icon(Icons
+                                                    .keyboard_arrow_down_rounded),
                                                 contentPadding:
                                                     EdgeInsets.fromLTRB(
                                                         10, 10, 10, 0),
@@ -421,75 +424,32 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                                                 return ListTile(
                                                   onLongPress: () {
                                                     setState(() {
-                                                      manager_selectingmode =
-                                                          true;
+                                                      manager_selectingmode = true;
                                                     });
                                                   },
                                                   onTap: () {
                                                     setState(() {
-                                                      if (manager_selectingmode) {
-                                                        manager_selectedlist[
-                                                                    index]
-                                                                .manager_selected =
-                                                            !manager_selectedlist[
-                                                                    index]
-                                                                .manager_selected;
-                                                        log(manager_selectedlist[
-                                                                    index]
-                                                                .userid
-                                                                .toString() +
-                                                            manager_selectedlist[
-                                                                    index]
-                                                                .manager_selected
-                                                                .toString());
+                                                      if (manager_selectingmode) {manager_selectedlist[index].manager_selected = !manager_selectedlist[index].manager_selected;
+                                                        log(manager_selectedlist[index].userid.toString() +
+                                                            manager_selectedlist[index].manager_selected.toString());}
+                                                      if (manager_selectedlist[index].manager_selected == true) {
+                                                        manager_names.add(manager_selectedlist[index].username);
+                                                        manager_id.add(manager_selectedlist[index].userid);
+                                                      } else if (manager_selectedlist[index].manager_selected == false) {
+                                                        manager_names.remove(manager_selectedlist[index].username);
+                                                        manager_id.remove(manager_selectedlist[index].userid);
                                                       }
-                                                      if (manager_selectedlist[
-                                                                  index]
-                                                              .manager_selected ==
-                                                          true) {
-                                                        manager_names.add(
-                                                            manager_selectedlist[
-                                                                    index]
-                                                                .username);
-                                                        manager_id.add(
-                                                            manager_selectedlist[
-                                                                    index]
-                                                                .userid);
-                                                      } else if (manager_selectedlist[
-                                                                  index]
-                                                              .manager_selected ==
-                                                          false) {
-                                                        manager_names.remove(
-                                                            manager_selectedlist[
-                                                                    index]
-                                                                .username);
-                                                        manager_id.remove(
-                                                            manager_selectedlist[
-                                                                    index]
-                                                                .userid);
-                                                      }
-                                                      if (manager_names.length >
-                                                          0) {
-                                                        manager_names.remove(
-                                                            "Select Manager");
+                                                      if (manager_names.length > 0) {
+                                                        manager_names.remove("Select Manager");
                                                       } else {
-                                                        manager_names.add(
-                                                            "Select Manager");
+                                                        manager_names.add("Select Manager");
                                                       }
                                                     });
                                                   },
-                                                  selected:
-                                                      manager_selectedlist[
-                                                              index]
-                                                          .manager_selected,
-                                                  title: Text(
-                                                      manager_selectedlist[
-                                                              index]
-                                                          .username),
+                                                  selected: manager_selectedlist[index].manager_selected,
+                                                  title: Text(manager_selectedlist[index].username),
                                                   trailing: (manager_selectingmode)
-                                                      ? ((manager_selectedlist[
-                                                                  index]
-                                                              .manager_selected)
+                                                      ? ((manager_selectedlist[index].manager_selected)
                                                           ? Icon(
                                                               Icons.check_box)
                                                           : Icon(Icons
@@ -596,17 +556,26 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                                       ),
                                     ),
                                   ),
-                               Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 crossAxisAlignment: CrossAxisAlignment.center,
-                                 children: <Widget>[
-                                   ElevatedButton(
+                                  Column(
 
-                                     onPressed: () => addTask(context),
-                                     child: const Text("Submit"),
-                                   ),
-                                 ],
-                               )
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      Center(
+
+                                        child: SizedBox(
+                                          width: 200.0,
+                                          height: 40.0,
+                                          child:  ElevatedButton(
+
+                                            onPressed: () => addTask(context),
+                                            child: const Text("Submit"),
+                                          ),
+                                        )
+                                      )
+
+                                    ],
+                                  )
                                 ],
                               ),
                             ),
@@ -637,8 +606,8 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
     super.initState();
     _getPrefValue();
 
-    if(_fileName==null){
-      _fileName="";
+    if (_fileName == null) {
+      _fileName = "";
     }
     if (names.length == 0) {
       names.add("Select Employee");
@@ -646,57 +615,6 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
     if (manager_names.length == 0) {
       manager_names.add("Select Manager");
     }
- }
-
-  Future<void> addTask(BuildContext context) async {
-    print("names" + emp_id.join(","));
-    print("manager_id" + manager_id.join(","));
-    FormData formData = new FormData.fromMap({
-      "userid": user_id,
-      "token": token,
-      "start_date": start_currentdate,
-      "end_date": end_currentdate,
-      "title": _titlecontroller.text,
-      "subject": _subjectcontroller.text,
-      "description": _desccontroller.text,
-      "employee": emp_id.join(","),
-      "followup": manager_id.join(","),
-      "priority": priority_id,
-      "task_status": "2",
-      "task_per": "80",
-      "read_status": "1",
-      "project_id": "5",
-      "manager_id": manager_id.join(","),
-      "file":
-          await MultipartFile.fromFile(_paths.first.path, filename: _fileName)
-    });
-    print("formData");
-    print(formData);
-    _addTaskBloc.executeLeaveList(AddTaskRequest(formData));
-    _addTaskBloc.subject.listen((value) {
-      if (value.data.Result != null) {
-        String message = value.data.Result.message;
-        if (value.data.Result.status == "0") {
-          Fluttertoast.showToast(
-              msg: message,
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
-          // isloading = false;
-          // showlist = false;
-
-        } else {
-          // showlist = true;
-
-        }
-      }
-      setState(() {
-        isloading = false;
-      });
-    });
   }
 
   Future<void> _getPrefValue() async {
@@ -707,8 +625,9 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
     print("token  :" + token);
     print("userid  :" + user_id);
 
-    _allListBloc.executeLeaveList(CommonRequest(user_id, token));
-    _allListBloc.subject.listen((value) {
+    _projectListBloc
+        .executeLeaveList(AllListRequest(user_id, token, selected_projectId));
+    _projectListBloc.subject.listen((value) {
       if (value.data.Result != null) {
         String message = value.data.Result.message;
         if (value.data.Result.status == "0") {
@@ -723,24 +642,11 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
           isloading = false;
           showlist = false;
           _projectlist = value.data.Result.projectlist;
-          _managerlist = value.data.Result.managerlist;
-          _employee_list = value.data.Result.employee_list;
-          manager_selectedlist = _managerlist;
-          emp_selectedlist = _employee_list;
         } else {
           showlist = true;
           _projectlist = value.data.Result.projectlist;
-          _managerlist = value.data.Result.managerlist;
-          _employee_list = value.data.Result.employee_list;
-          manager_selectedlist = _managerlist;
-          emp_selectedlist = _employee_list;
-
-          manager_selectedlist.forEach((p) => p.manager_selected = false);
-          emp_selectedlist.forEach((p) => p.emp_selected = false);
 
           print("projectlist" + _projectlist.toString());
-          print("managerlist" + _managerlist.toString());
-          print("_employee_list" + _employee_list.toString());
         }
       }
       setState(() {
@@ -773,18 +679,17 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
       _fileName = _paths != null ? _paths.map((e) => e.name).toString() : '...';
       file1 = new File(_fileName);
       _fileName = _fileName.replaceAll("(", "");
-      _fileName = _fileName.replaceAll(
-          ")                                                     ", "");
+      _fileName = _fileName.replaceAll(")  ", "");
       print("file1_" + file1.toString());
     });
   }
 
   Widget getDropDown() {
-    var items = _projectlist.map((leave_list) {
+    var items = _projectlist.map((projectshowlist) {
       return new DropdownMenuItem<ProjectListModel>(
-        value: leave_list,
+        value: projectshowlist,
         child: new TextView(
-          leave_list.project_name,
+          projectshowlist.project_name,
           fontFamily: 'Poppins-SemiBold',
           fontSize: 13,
           textColor: Colors.black,
@@ -800,9 +705,20 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
       onChanged: (ProjectListModel list) {
         setState(() {
           this._nameList = list;
-          leave_type_id = list.id;
-
-          print("select id : " + leave_type_id);
+          selected_projectId = list.id;
+          print("select id : " + selected_projectId);
+          _getNewList(selected_projectId);
+          if (managerlist_showlist == true) {
+            managerlist_showlist = false;
+          } else {
+            managerlist_showlist = true;
+          }
+          if (employeelist_showlist ==
+              true) {
+            employeelist_showlist = false;
+          } else {
+            employeelist_showlist = true;
+          }
         });
       },
       items: items,
@@ -859,5 +775,92 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
       end_date = formatter.format(date1);
       print('gettingDate $end_currentdate');
     }, currentTime: DateTime.now(), locale: LocaleType.en);
+  }
+
+  Future<void> addTask(BuildContext context) async {
+    print("names" + emp_id.join(","));
+    print("manager_id" + manager_id.join(","));
+    FormData formData = new FormData.fromMap({
+      "userid": user_id,
+      "token": token,
+      "start_date": start_currentdate,
+      "end_date": end_currentdate,
+      "title": _titlecontroller.text,
+      "subject": _subjectcontroller.text,
+      "description": _desccontroller.text,
+      "employee": emp_id.join(","),
+      "followup": manager_id.join(","),
+      "priority": priority_id,
+      "task_status": "2",
+      "task_per": "80",
+      "read_status": "1",
+      "project_id": "5",
+      "file":
+          await MultipartFile.fromFile(_paths.first.path, filename: _fileName)
+    });
+    print("formData");
+    print(formData);
+    _addTaskBloc.executeLeaveList(AddTaskRequest(formData));
+    _addTaskBloc.subject.listen((value) {
+      if (value.data.Result != null) {
+        String message = value.data.Result.message;
+        if (value.data.Result.status == "0") {
+          Fluttertoast.showToast(
+              msg: message,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          // isloading = false;
+          // showlist = false;
+
+        } else {
+          // showlist = true;
+
+        }
+      }
+      setState(() {
+        isloading = false;
+      });
+    });
+  }
+
+  void _getNewList(String selected_projectId) {
+    _allListBloc
+        .executeLeaveList(AllListRequest(user_id, token, selected_projectId));
+    _allListBloc.subject.listen((value) {
+      if (value.data.Result != null) {
+        String message = value.data.Result.message;
+        if (value.data.Result.status == "0") {
+          Fluttertoast.showToast(
+              msg: message,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          isloading = false;
+          showlist = false;
+          _managerlist = value.data.Result.managerlist;
+          _employee_list = value.data.Result.employee_list;
+          manager_selectedlist = _managerlist;
+          emp_selectedlist = _employee_list;
+        } else {
+          _managerlist = value.data.Result.managerlist;
+          _employee_list = value.data.Result.employee_list;
+          manager_selectedlist = _managerlist;
+          emp_selectedlist = _employee_list;
+
+          manager_selectedlist.forEach((p) => p.manager_selected = false);
+          emp_selectedlist.forEach((p) => p.emp_selected = false);
+
+          print("managerlist" + _managerlist.toString());
+          print("_employee_list" + _employee_list.toString());
+        }
+      }
+    });
   }
 }
