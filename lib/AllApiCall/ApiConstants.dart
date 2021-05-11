@@ -59,6 +59,15 @@ class ApiConstants {
 // View TAsk
   static final String VIEW_TASK = "view_task.php";
 
+
+// kra_employee
+  static final String KRA_employee = "kra_employee_list.php";
+
+
+
+// Add KRA
+  static final String ADD_KRA = "add_kra.php";
+
   // mobile number
   static final String MOBILE_NO = "mobile";
 
@@ -86,7 +95,7 @@ class ApiConstants {
   static final String UPDATE_DATE = "update_date";
   static final String CHECKOUT_IMAGE = "check_out_image";
 
-  // attendance list
+  // attendance list0
   static final String START_TIME = "start_time";
   static final String END_TIME = "end_time";
 

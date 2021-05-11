@@ -13,6 +13,7 @@ class ServicesList{
     lstOfCities.add(new ServicesList(servicename:"Leave balance",image: "balance.png"));
     lstOfCities.add(new ServicesList(servicename:"BirthDays",image: "birthday.png"));
     lstOfCities.add(new ServicesList(servicename:"Task",image: "task.png"));
+    lstOfCities.add(new ServicesList(servicename:"kRA",image: "task.png"));
     return lstOfCities;
   }
 }

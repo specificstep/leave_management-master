@@ -109,8 +109,7 @@ class _AddTaskScreen extends State<AddTaskScreenStates> {
                 icon: Icon(
                   Icons.arrow_back,
                 ),
-                onPressed: () {
-                  _onBackPressed();
+                onPressed: () {_onBackPressed();
                 },
               ),
             ),
